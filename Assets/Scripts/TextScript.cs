@@ -26,11 +26,12 @@ public class TextScript : MonoBehaviour
 	//when true, user shouldnt be allowed to progress story
 	//when should this be made true?
 	private bool awaitingChoice = false;
+	
 
     // Start is called before the first frame update
     void Start()
     {
-		//make storyCompiler compile story
+		storyCompiler.Compile(gameText);
     }
 	
     // Update is called once per frame
@@ -39,15 +40,28 @@ public class TextScript : MonoBehaviour
 		//ProgressStory() also returns a string - what string is that?
 		//can be used like this: 
 		//string randomString = storyCompiler.ProgressStory();
-		
-		//change the text of the displayText
-		
-		//check for any image that matches the title given by storyCompiler.getImageTitle()
-		//set displayImage.color = Color.clear if there is no image, and Color.white if there is an image
-		
-		//create buttons for any choices the player has
-		//use the createChoiceButtons function, the input should be storyCompiler.getButtonTitles()
-		//what if getButtonTitles() returns null?
+		if (Input.GetKeyDown("space") && !awaitingChoice && !storyCompiler.gameEnded()) {
+			//change the text of the displayText
+			displayText.text = storyCompiler.ProgressStory("");
+			//check for any image that matches the title given by storyCompiler.getImageTitle()
+			if (Resources.Load<Sprite>(storyCompiler.getImageTitle()) != null) {
+				Sprite sprite = Resources.Load<Sprite>(storyCompiler.getImageTitle());
+				displayImage.sprite = sprite;
+				displayImage.preserveAspect = true;
+				//set displayImage.color = Color.clear if there is no image, and Color.white if there is an image
+				displayImage.color = Color.white;
+			}
+			else {
+				displayImage.color = Color.clear;
+			}
+			//create buttons for any choices the player has
+			//what is getButtonTitles() returns null?
+			if (storyCompiler.getButtonTitles().Count != 0) {
+				//use the createChoiceButtons function, the input should be storyCompiler.getButtonTitles()
+				createChoiceButtons(storyCompiler.getButtonTitles());
+				awaitingChoice = true;
+			}
+		}
     }
 	
 	void createChoiceButtons(List<string> buttonTitles) {
@@ -55,22 +69,34 @@ public class TextScript : MonoBehaviour
 		for (int i = 0; i<buttonTitles.Count-1; i++) {
 			string buttonTitle = buttonTitles[i];
 			//create the button, name it 'choice'
+			Button choice = Instantiate(choiceButtonPrefab, canvas.transform);
+			
 			//set the text in the button
+			choice.GetComponentInChildren<Text>().text=buttonTitle;
 			
 			//adjusts the buttons y-position based on the number of buttons created so far (hint: use recttransform)
 			//Vector2 buttonPosition = choice.GetComponent<RectTransform>().anchoredPosition
 			//this might be useful - but read abt what anchoredPosition is!
+			RectTransform buttonRectTransform = choice.GetComponent<RectTransform>();
+			Vector2 buttonPosition = choice.GetComponent<RectTransform>().anchoredPosition; 
+			buttonPosition.y -= i*choice.GetComponent<RectTransform>().rect.height;
+			choice.GetComponent<RectTransform>().anchoredPosition = buttonPosition;
 			
-			//Uncomment below when you finish
 			//adding listener to button, ie when button is clicked, call the function ChoiceOnClick with the input temp
-			//string temp = storyCompiler.getAfterFromText(buttonTitle);
-			//choice.onClick.AddListener(delegate {ChoiceOnClick(temp);});
+			string temp = storyCompiler.getAfterFromText(buttonTitle);
+			choice.onClick.AddListener(delegate {ChoiceOnClick(temp);});
 		}
 	}
 	
-	void ChoiceOnClick(string titleToSearchFor) {//when button is clicked, destroy all buttons, progress story based on choice
+	//when button is clicked, destroy all buttons, progress story based on choice
+	void ChoiceOnClick(string titleToSearchFor) {
 		//find all buttons with GameObject.FindGameObjectsWithTag(something)
 		//run a for loop to destroy all the GameObjects the above function returned
+		GameObject[] buttonArray = GameObject.FindGameObjectsWithTag("choiceButton");
+		for (int i=0; i<buttonArray.Length; i++) {
+			Destroy(buttonArray[i]);
+		}
+		
 		awaitingChoice = false;
 		storyCompiler.clearButtonTitles();
 		displayText.text = storyCompiler.ProgressStory(titleToSearchFor);
