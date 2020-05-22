@@ -16,6 +16,8 @@ public class TextScript : MonoBehaviour
 	public Button choiceButtonPrefab;
 	public Canvas canvas;
 	
+	public GameObject buttonPanel;
+	
 	//custom created StoryCompiler class, defined in the StoryCompiler script
 	//it breaks down the raw text from the txt file
 	//it also keeps track of the flow of the story
@@ -66,10 +68,10 @@ public class TextScript : MonoBehaviour
 	
 	void createChoiceButtons(List<string> buttonTitles) {
 		//function to create the buttons for the choices
-		for (int i = 0; i<buttonTitles.Count-1; i++) {
+		for (int i = 0; i<buttonTitles.Count; i++) {
 			string buttonTitle = buttonTitles[i];
 			//create the button, name it 'choice'
-			Button choice = Instantiate(choiceButtonPrefab, canvas.transform);
+			Button choice = Instantiate(choiceButtonPrefab, buttonPanel.transform);
 			
 			//set the text in the button
 			choice.GetComponentInChildren<Text>().text=buttonTitle;
@@ -78,6 +80,7 @@ public class TextScript : MonoBehaviour
 			//Vector2 buttonPosition = choice.GetComponent<RectTransform>().anchoredPosition
 			//this might be useful - but read abt what anchoredPosition is!
 			RectTransform buttonRectTransform = choice.GetComponent<RectTransform>();
+			buttonRectTransform.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, buttonPanel.GetComponent<RectTransform>().rect.height/3);//set the height of the button, 1/3 of the panel height
 			Vector2 buttonPosition = choice.GetComponent<RectTransform>().anchoredPosition; 
 			buttonPosition.y -= i*choice.GetComponent<RectTransform>().rect.height;
 			choice.GetComponent<RectTransform>().anchoredPosition = buttonPosition;
