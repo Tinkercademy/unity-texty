@@ -1,0 +1,7 @@
+entrance|You're at the entrance of your house.
+hallway>*Go in.
+failbedroom>*Teleport in.
+hallway|bedroom>You're in the hallway. The bedroom's the only room open.
+failbedroom|hallway>you can't teleport. you just have to walk into the hallway.
+bedroom|end>You're in the bedroom.
+end|that's the end of your boring life.
