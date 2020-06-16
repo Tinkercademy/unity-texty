@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Events;
 using UnityEngine.Animations;
+using TMPro;
 
 public class TextScript : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class TextScript : MonoBehaviour
 	//declaring the GameObjects in your scene/prefabs
 	//fill these in in the inspector!!
 	public TextAsset gameText;//this should be your .txt file
-	public Text displayText;
+	public TextMeshProUGUI displayText;
 	public Image displayImage;
 	public Button choiceButtonPrefab;
 	public Canvas canvas;
